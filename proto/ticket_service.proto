@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package ticket;
+
+option go_package = "proto/ticket";
+
+service TicketService {
+  rpc CreateTicket(CreateTicketRequest) returns (TicketResponse) {}
+  rpc GetTicket(GetTicketRequest) returns (TicketResponse) {}
+  rpc ListTickets(ListTicketsRequest) returns (ListTicketsResponse) {}
+  rpc UpdateTicket(UpdateTicketRequest) returns (TicketResponse) {}
+  rpc DeleteTicket(DeleteTicketRequest) returns (DeleteTicketResponse) {}
+  rpc CheckAvailability(CheckAvailabilityRequest) returns (CheckAvailabilityResponse) {}
+  rpc ReserveTickets(ReserveTicketsRequest) returns (ReserveTicketsResponse) {}
+}
+
+message Ticket {
+  string id = 1;
+  string event_id = 2;
+  string ticket_type_id = 3;
+  string name = 4;
+  string description = 5;
+  double price = 6;
+  string currency = 7;
+  int32 max_tickets_per_order = 8;
+  bool is_transferable = 9;
+  bool is_refundable = 10;
+  string refund_policy = 11;
+  string sales_start_date = 12;
+  string sales_end_date = 13;
+  string status = 14;
+  string created_at = 15;
+  string updated_at = 16;
+}
+
+message TicketInventory {
+  string ticket_id = 1;
+  int32 total_quantity = 2;
+  int32 available_quantity = 3;
+  int32 reserved_quantity = 4;
+  int32 sold_quantity = 5;
+  string last_updated = 6;
+}
+
+message CreateTicketRequest {
+  string event_id = 1;
+  string ticket_type_id = 2;
+  string name = 3;
+  string description = 4;
+  double price = 5;
+  string currency = 6;
+  int32 max_tickets_per_order = 7;
+  bool is_transferable = 8;
+  bool is_refundable = 9;
+  string refund_policy = 10;
+  string sales_start_date = 11;
+  string sales_end_date = 12;
+  int32 total_quantity = 13;
+}
+
+message GetTicketRequest {
+  string ticket_id = 1;
+}
+
+message ListTicketsRequest {
+  string event_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  string status = 4;
+}
+
+message ListTicketsResponse {
+  repeated Ticket tickets = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message UpdateTicketRequest {
+  string ticket_id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  string currency = 5;
+  int32 max_tickets_per_order = 6;
+  bool is_transferable = 7;
+  bool is_refundable = 8;
+  string refund_policy = 9;
+  string sales_start_date = 10;
+  string sales_end_date = 11;
+  string status = 12;
+}
+
+message DeleteTicketRequest {
+  string ticket_id = 1;
+}
+
+message DeleteTicketResponse {
+  bool success = 1;
+}
+
+message CheckAvailabilityRequest {
+  string ticket_id = 1;
+  int32 quantity = 2;
+}
+
+message CheckAvailabilityResponse {
+  bool available = 1;
+  int32 available_quantity = 2;
+  string message = 3;
+}
+
+message ReserveTicketsRequest {
+  string ticket_id = 1;
+  int32 quantity = 2;
+  string user_id = 3;
+}
+
+message ReserveTicketsResponse {
+  bool success = 1;
+  string reservation_id = 2;
+  string expires_at = 3;
+  string message = 4;
+}
+
+message TicketResponse {
+  Ticket ticket = 1;
+} 

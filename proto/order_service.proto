@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "proto/order";
+
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (OrderResponse) {}
+  rpc GetOrder(GetOrderRequest) returns (OrderResponse) {}
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {}
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (OrderResponse) {}
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse) {}
+  rpc ProcessPayment(ProcessPaymentRequest) returns (ProcessPaymentResponse) {}
+}
+
+message Order {
+  string id = 1;
+  string customer_id = 2;
+  string order_number = 3;
+  string order_date = 4;
+  double subtotal = 5;
+  double discount_amount = 6;
+  double tax_amount = 7;
+  double fee_amount = 8;
+  double total_amount = 9;
+  string currency = 10;
+  string discount_id = 11;
+  string status = 12;
+  BillingInfo billing_info = 13;
+  repeated OrderItem items = 14;
+  string created_at = 15;
+  string updated_at = 16;
+}
+
+message OrderItem {
+  string id = 1;
+  string ticket_id = 2;
+  int32 quantity = 3;
+  double unit_price = 4;
+  double subtotal = 5;
+  double discount_amount = 6;
+  double tax_amount = 7;
+  double fee_amount = 8;
+  double total_amount = 9;
+  string status = 10;
+}
+
+message BillingInfo {
+  string name = 1;
+  string email = 2;
+  string address = 3;
+  string city = 4;
+  string state = 5;
+  string country = 6;
+  string postal_code = 7;
+  string phone = 8;
+}
+
+message CreateOrderRequest {
+  string customer_id = 1;
+  repeated OrderItemRequest items = 2;
+  string discount_code = 3;
+  BillingInfo billing_info = 4;
+}
+
+message OrderItemRequest {
+  string ticket_id = 1;
+  int32 quantity = 2;
+}
+
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+message ListOrdersRequest {
+  string customer_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+  string status = 4;
+  string start_date = 5;
+  string end_date = 6;
+}
+
+message ListOrdersResponse {
+  repeated Order orders = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message UpdateOrderStatusRequest {
+  string order_id = 1;
+  string status = 2;
+}
+
+message CancelOrderRequest {
+  string order_id = 1;
+  string reason = 2;
+}
+
+message CancelOrderResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ProcessPaymentRequest {
+  string order_id = 1;
+  PaymentInfo payment_info = 2;
+}
+
+message PaymentInfo {
+  string payment_method = 1;
+  string card_number = 2;
+  string card_holder_name = 3;
+  string expiry_date = 4;
+  string cvv = 5;
+}
+
+message ProcessPaymentResponse {
+  bool success = 1;
+  string transaction_id = 2;
+  string message = 3;
+}
+
+message OrderResponse {
+  Order order = 1;
+} 
