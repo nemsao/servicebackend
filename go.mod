@@ -9,7 +9,7 @@ require (
     github.com/joho/godotenv v1.5.1
     golang.org/x/crypto v0.19.0
     google.golang.org/grpc v1.61.0
-    github.com/nemsao/servicebackend v1.0.0-your-pseudo-version // This will be added after go get
+    github.com/nemsao/servicebackend v1.0.0
 )
 
 require (
