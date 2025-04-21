@@ -1,18 +1,19 @@
 package main
 
 import (
-    "context"
-    "log"
-    "net"
-    "os"
-    "os/signal"
-    "syscall"
-    "google.golang.org/grpc"
-    "google.golang.org/grpc/reflection"
-    "services_app/internal/config"
-    "services_app/internal/config"
-    "services_app/internal/database"
-    "services_app/internal/services"
+	"context"
+	"log"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
+	"github.com/nemsao/servicebackend/internal/config"
+	"github.com/nemsao/servicebackend/internal/database"
+	"github.com/nemsao/servicebackend/internal/services"
 )
 
 func main() {

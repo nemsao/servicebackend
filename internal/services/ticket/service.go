@@ -6,12 +6,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
-	"services_app/internal/database"
-	"services_app/proto/ticket_service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-)
 
+	"github.com/nemsao/servicebackend/internal/database"
+	"github.com/nemsao/servicebackend/proto/ticket_service"
+)
 type Service struct {
 	db  *database.PostgresDB
 	cfg *config.Config

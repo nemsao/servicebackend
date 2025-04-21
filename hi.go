@@ -1,7 +1,7 @@
 package main // Đảm bảo file này là package main
 
 import (
-	"context" // Lưu ý: context hiện chưa được sử dụng trực tiếp trong main, có thể gây lỗi "imported and not used" nếu không dùng ở đâu khác.
+	"context"
 	"log"
 	"net"
 	"os"
@@ -11,10 +11,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	// Chỉ import một lần
-	"services_app/internal/config"
-	"services_app/internal/database"
-	"services_app/internal/services"
+	"github.com/nemsao/servicebackend/internal/config"
+	"github.com/nemsao/servicebackend/internal/database"
+	"github.com/nemsao/servicebackend/internal/services"
 )
 
 func main() {

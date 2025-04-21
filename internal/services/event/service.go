@@ -9,9 +9,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"services_app/internal/database"
-	"services_app/internal/config" // Assuming your config package path
-	pb "services_app/proto/event_service"   // Assuming your proto package path
+	"github.com/nemsao/servicebackend/internal/database"
+	"github.com/nemsao/servicebackend/internal/config" // Assuming your config package path
+	pb "github.com/nemsao/servicebackend/proto/event_service"   // Assuming your proto package path
 )
 
 type Service struct {

@@ -6,21 +6,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"internal/database"
-	"services_app/internal/services/auth"
-	"services_app/proto/user_service"
-	"golang.org/x/crypto/bcrypt"
-	"services_app/internal/database"
-	"services_app/internal/services/auth"
-	"services_app/proto/user_service"
-	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"github.com/nemsao/servicebackend/internal/database"
+	"github.com/nemsao/servicebackend/internal/services/auth"
+	"github.com/nemsao/servicebackend/proto/user_service"
 )
-
 type Service struct {
 	db  *database.PostgresDB
 	cfg *config.Config

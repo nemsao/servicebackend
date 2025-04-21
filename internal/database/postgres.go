@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	"services_app/internal/config"
+	"github.com/nemsao/servicebackend/internal/config"
 )
 
 type PostgresDB struct {

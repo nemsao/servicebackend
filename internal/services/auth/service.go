@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"services_app/internal/database"
-	"services_app/proto/auth_service"
+	"github.com/nemsao/servicebackend/internal/database"
+	"github.com/nemsao/servicebackend/proto/auth_service"
 )
 
 type Service struct {

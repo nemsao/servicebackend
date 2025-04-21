@@ -10,11 +10,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"services_app/internal/config"   // Assuming your config package path
-	"services_app/internal/database" // Assuming your database package path
-	pb "services_app/proto/order_service"    // Assuming your proto package path
+	"github.com/nemsao/servicebackend/internal/config"   // Assuming your config package path
+	"github.com/nemsao/servicebackend/internal/database" // Assuming your database package path
+	pb "github.com/nemsao/servicebackend/proto/order_service"    // Assuming your proto package path
 )
-
 type Service struct {
 	db  *database.PostgresDB
 	cfg *config.Config
