@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+		"github.com/jackc/pgx/v5"
+		"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/nemsao/servicebackend/internal/config"
+	"services_app/internal/config"
+	  "github.com/jackc/pgx/v5/pgconn"
 )
 
 type PostgresDB struct {
@@ -20,7 +21,7 @@ func NewPostgresDB(cfg config.DatabaseConfig) (*PostgresDB, error) {
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
 	)
-
+print(connStr)
 	poolConfig, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing database config: %v", err)
@@ -30,7 +31,7 @@ func NewPostgresDB(cfg config.DatabaseConfig) (*PostgresDB, error) {
 	poolConfig.MinConns = int32(cfg.MaxIdleConns)
 	poolConfig.MaxConnLifetime = cfg.ConnMaxLifetime
 
-	pool, err := pgxpool.ConnectConfig(context.Background(), poolConfig)
+	pool, err := pgxpool.NewWithConfig(context.Background(), poolConfig)
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to database: %v", err)
 	}

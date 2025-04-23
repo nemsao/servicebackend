@@ -5,14 +5,15 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/google/uuid"
+	//"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/nemsao/servicebackend/internal/database"
-	"github.com/nemsao/servicebackend/proto/auth_service"
+	
 )
-
+import("services_app/internal/database")
+import("services_app/proto/auth")
+import("services_app/internal/config")
 type Service struct {
 	db  *database.PostgresDB
 	cfg *config.Config

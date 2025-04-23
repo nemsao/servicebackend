@@ -3,10 +3,15 @@ package services
 import (
 	"context"
 	"time"
-
+"log"
 	"google.golang.org/grpc"
 
 	"services_app/internal/database"
+pb_auth	"services_app/proto/auth"
+pb_event	"services_app/proto/event"
+pb_order	"services_app/proto/order"
+pb_ticket	"services_app/proto/ticket"
+pb_user	"services_app/proto/user"
 	"services_app/internal/services/auth"
 	"services_app/internal/services/event"
 	"services_app/internal/services/order"
@@ -14,23 +19,32 @@ import (
 	"services_app/internal/services/user"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"services_app/internal/config"
 )
 
 // RegisterServices registers all gRPC services with the server
 func RegisterServices(server *grpc.Server, db *database.PostgresDB, cfg *config.Config) {
-	// Initialize services
-	userService := user.NewService(db, cfg)
-	eventService := event.NewService(db, cfg)
-	ticketService := ticket.NewService(db, cfg)
-	orderService := order.NewService(db, cfg)
-	authService := auth.NewService(db, cfg)
+   // Initialize services
+   userService := user.NewService(db, cfg)
+   eventService := event.NewService(db, cfg)
 
-	// Register services
-	user.RegisterUserServiceServer(server, userService)
-	event.RegisterEventServiceServer(server, eventService)
-	ticket.RegisterTicketServiceServer(server, ticketService)
-	order.RegisterOrderServiceServer(server, orderService)
-	auth.RegisterAuthServiceServer(server, authService)
+   // Khởi tạo TicketService server implementation
+   // Biến ticketService có kiểu là *"services_app/internal/services/ticket".Service
+   ticketService := ticket.NewService(db, cfg)
+
+   // Khởi tạo OrderService, truyền implement server của TicketService vào đây.
+   // Điều này hợp lệ vì *"services_app/internal/services/ticket".Service implements pb_ticket.TicketServiceServer
+   orderService := order.NewService(db, cfg, ticketService) // <== Pass implement server
+
+   authService := auth.NewService(db, cfg)
+
+
+   // Register services
+   pb_user.RegisterUserServiceServer(server, userService)
+   pb_event.RegisterEventServiceServer(server, eventService)
+   pb_ticket.RegisterTicketServiceServer(server, ticketService) // <== Đăng ký implement server TicketService
+   pb_order.RegisterOrderServiceServer(server, orderService)      // <== Đăng ký implement server OrderService
+   pb_auth.RegisterAuthServiceServer(server, authService)
 }
 
 // UnaryServerInterceptor is a gRPC interceptor for unary RPCs

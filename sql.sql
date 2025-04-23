@@ -1,6 +1,6 @@
 -- Create database
-CREATE DATABASE ticket_selling_app;
-\c ticket_selling_app;
+--CREATE DATABASE ticket_selling_app;
+--\c ticket_selling_app;
 
 -- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

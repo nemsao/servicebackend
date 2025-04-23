@@ -3,15 +3,15 @@ package ticket
 import (
 	"context"
 	"time"
-
+    "strconv"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/nemsao/servicebackend/internal/database"
-	"github.com/nemsao/servicebackend/proto/ticket_service"
 )
+import ("services_app/internal/database")
+import ("services_app/internal/config")
+import(ticket "services_app/proto/ticket")
 type Service struct {
 	db  *database.PostgresDB
 	cfg *config.Config
@@ -22,6 +22,7 @@ func NewService(db *database.PostgresDB, cfg *config.Config) *Service {
 	return &Service{
 		db:  db,
 		cfg: cfg,
+	
 	}
 }
 
@@ -122,7 +123,7 @@ func (s *Service) GetTicket(ctx context.Context, req *ticket.GetTicketRequest) (
 		refundPolicy      string
 		salesStartDate    time.Time
 		salesEndDate      time.Time
-		status            string
+		Status            string
 		createdAt         time.Time
 		updatedAt         time.Time
 	)
@@ -136,7 +137,7 @@ func (s *Service) GetTicket(ctx context.Context, req *ticket.GetTicketRequest) (
 		WHERE id = $1
 	`, req.TicketId).Scan(&ticketID, &eventID, &ticketTypeID, &name, &description,
 		&price, &currency, &maxTicketsPerOrder, &isTransferable, &isRefundable,
-		&refundPolicy, &salesStartDate, &salesEndDate, &status, &createdAt, &updatedAt)
+		&refundPolicy, &salesStartDate, &salesEndDate, &Status, &createdAt, &updatedAt)
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -161,7 +162,7 @@ func (s *Service) GetTicket(ctx context.Context, req *ticket.GetTicketRequest) (
 			RefundPolicy:      refundPolicy,
 			SalesStartDate:    salesStartDate.Format(time.RFC3339),
 			SalesEndDate:      salesEndDate.Format(time.RFC3339),
-			Status:            status,
+			Status:            Status,
 			CreatedAt:         createdAt.Format(time.RFC3339),
 			UpdatedAt:         updatedAt.Format(time.RFC3339),
 		},
@@ -239,14 +240,14 @@ func (s *Service) ListTickets(ctx context.Context, req *ticket.ListTicketsReques
 			refundPolicy      string
 			salesStartDate    time.Time
 			salesEndDate      time.Time
-			status            string
+			Status            string
 			createdAt         time.Time
 			updatedAt         time.Time
 		)
 
 		err := rows.Scan(&ticketID, &eventID, &ticketTypeID, &name, &description,
 			&price, &currency, &maxTicketsPerOrder, &isTransferable, &isRefundable,
-			&refundPolicy, &salesStartDate, &salesEndDate, &status, &createdAt, &updatedAt)
+			&refundPolicy, &salesStartDate, &salesEndDate, &Status, &createdAt, &updatedAt)
 		if err != nil {
 			return nil, status.Error(codes.Internal, "failed to scan ticket")
 		}
@@ -265,7 +266,7 @@ func (s *Service) ListTickets(ctx context.Context, req *ticket.ListTicketsReques
 			RefundPolicy:      refundPolicy,
 			SalesStartDate:    salesStartDate.Format(time.RFC3339),
 			SalesEndDate:      salesEndDate.Format(time.RFC3339),
-			Status:            status,
+			Status:            Status,
 			CreatedAt:         createdAt.Format(time.RFC3339),
 			UpdatedAt:         updatedAt.Format(time.RFC3339),
 		})
@@ -345,7 +346,7 @@ func (s *Service) UpdateTicket(ctx context.Context, req *ticket.UpdateTicketRequ
 		refundPolicy      string
 		updatedSalesStartDate time.Time
 		updatedSalesEndDate   time.Time
-		status            string
+		Status            string
 		createdAt         time.Time
 		updatedAt         time.Time
 	)
@@ -356,7 +357,7 @@ func (s *Service) UpdateTicket(ctx context.Context, req *ticket.UpdateTicketRequ
 		req.RefundPolicy, salesStartDate, salesEndDate, req.Status, now,
 	).Scan(&ticketID, &eventID, &ticketTypeID, &name, &description,
 		&price, &currency, &maxTicketsPerOrder, &isTransferable, &isRefundable,
-		&refundPolicy, &updatedSalesStartDate, &updatedSalesEndDate, &status,
+		&refundPolicy, &updatedSalesStartDate, &updatedSalesEndDate, &Status,
 		&createdAt, &updatedAt)
 
 	if err != nil {
@@ -382,7 +383,7 @@ func (s *Service) UpdateTicket(ctx context.Context, req *ticket.UpdateTicketRequ
 			RefundPolicy:      refundPolicy,
 			SalesStartDate:    updatedSalesStartDate.Format(time.RFC3339),
 			SalesEndDate:      updatedSalesEndDate.Format(time.RFC3339),
-			Status:            status,
+			Status:            Status,
 			CreatedAt:         createdAt.Format(time.RFC3339),
 			UpdatedAt:         updatedAt.Format(time.RFC3339),
 		},

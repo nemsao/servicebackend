@@ -6,13 +6,18 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"github.com/jackc/pgx/v5/pgtype"
 
-	"github.com/nemsao/servicebackend/internal/database"
-	"github.com/nemsao/servicebackend/internal/services/auth"
-	"github.com/nemsao/servicebackend/proto/user_service"
+)
+import (
+	"services_app/internal/config"
+	"services_app/internal/database"
+	"services_app/internal/services/auth"
+	"services_app/proto/user"
 )
 type Service struct {
 	db  *database.PostgresDB
@@ -27,7 +32,7 @@ func NewService(db *database.PostgresDB, cfg *config.Config) *Service {
 	}
 }
 
-func (s *Service) RegisterUser(ctx context.Context, req *user.RegisterUserRequest) (*user.UserResponse, error) {
+func (s *Service) RegisterUser(ctx context.Context, req *user.RegisterUserRequest) (*user.RegisterResponse, error) {
 	// Validate request
 	if req.Username == "" || req.Email == "" || req.Password == "" {
 		return nil, status.Error(codes.InvalidArgument, "username, email, and password are required")
@@ -82,7 +87,7 @@ func (s *Service) RegisterUser(ctx context.Context, req *user.RegisterUserReques
 	}
 
 	// Return response
-	return &user.UserResponse{
+	return &user.RegisterResponse{
 		User: &user.User{
 			Id:        userID,
 			Username:  req.Username,
@@ -165,13 +170,14 @@ func (s *Service) GetUser(ctx context.Context, req *user.GetUserRequest) (*user.
 
 	// Get user
 	var (
+		userID       string
 		username     string
 		email        string
 		firstName    string
 		lastName     string
 		phoneNumber  string
 		profileImage string
-		dateOfBirth  *time.Time
+		dateOfBirth  pgtype.Timestamp // Use pgx.NullTime to handle nullable date
 		isVerified   bool
 		isActive     bool
 		createdAt    time.Time
@@ -179,12 +185,12 @@ func (s *Service) GetUser(ctx context.Context, req *user.GetUserRequest) (*user.
 	)
 
 	err := s.db.QueryRow(ctx, `
-		SELECT username, email, first_name, last_name, phone_number,
+		SELECT id, username, email, first_name, last_name, phone_number,
 		       profile_image_url, date_of_birth, is_verified, is_active,
 		       created_at, updated_at
 		FROM public.users
 		WHERE id = $1
-	`, req.UserId).Scan(&username, &email, &firstName, &lastName, &phoneNumber,
+	`, req.UserId).Scan(&userID, &username, &email, &firstName, &lastName, &phoneNumber,
 		&profileImage, &dateOfBirth, &isVerified, &isActive, &createdAt, &updatedAt)
 
 	if err != nil {
@@ -195,26 +201,30 @@ func (s *Service) GetUser(ctx context.Context, req *user.GetUserRequest) (*user.
 	}
 
 	// Return response
-	user := &user.User{
-		Id:             req.UserId,
-		Username:       username,
-		Email:          email,
-		FirstName:      firstName,
-		LastName:       lastName,
-		PhoneNumber:    phoneNumber,
-		ProfileImageUrl: profileImage,
-		IsVerified:     isVerified,
-		IsActive:       isActive,
-		CreatedAt:      createdAt.Format(time.RFC3339),
-		UpdatedAt:      updatedAt.Format(time.RFC3339),
+	userResponse := &user.UserResponse{
+		User: &user.User{
+			Id:             userID,
+			Username:       username,
+			Email:          email,
+			FirstName:      firstName,
+			LastName:       lastName,
+			PhoneNumber:    phoneNumber,
+			ProfileImageUrl: profileImage,
+			DateOfBirth:    "", // Initialize to empty string
+			IsVerified:     isVerified,
+			IsActive:       isActive,
+			CreatedAt:      createdAt.Format(time.RFC3339),
+			UpdatedAt:      updatedAt.Format(time.RFC3339),
+		},
 	}
 
-	if dateOfBirth != nil {
-		user.DateOfBirth = dateOfBirth.Format(time.RFC3339)
+	if dateOfBirth.Valid {
+		userResponse.User.DateOfBirth = dateOfBirth.Time.Format(time.RFC3339)
 	}
 
-	return &user.UserResponse{User: user}, nil
+	return userResponse, nil
 }
+
 
 func (s *Service) UpdateUser(ctx context.Context, req *user.UpdateUserRequest) (*user.UserResponse, error) {
 	// Validate request

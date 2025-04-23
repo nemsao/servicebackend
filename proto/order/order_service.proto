@@ -30,19 +30,26 @@ message Order {
   repeated OrderItem items = 14;
   string created_at = 15;
   string updated_at = 16;
+  string notes = 17;
+  string ip_address = 18;
+  string user_agent = 19;
+  string expiry_date = 20;
 }
 
 message OrderItem {
   string id = 1;
-  string ticket_id = 2;
-  int32 quantity = 3;
-  double unit_price = 4;
-  double subtotal = 5;
-  double discount_amount = 6;
-  double tax_amount = 7;
-  double fee_amount = 8;
-  double total_amount = 9;
-  string status = 10;
+  string order_id = 2;
+  string ticket_id = 3;
+  int32 quantity = 4;
+  double unit_price = 5;
+  double subtotal = 6;
+  double discount_amount = 7;
+  double tax_amount = 8;
+  double fee_amount = 9;
+  double total_amount = 10;
+  string status = 11;
+  string created_at = 12;
+  string updated_at = 13;
 }
 
 message BillingInfo {
@@ -66,6 +73,7 @@ message CreateOrderRequest {
 message OrderItemRequest {
   string ticket_id = 1;
   int32 quantity = 2;
+  double unit_price = 3; // Added unit_price
 }
 
 message GetOrderRequest {
@@ -124,4 +132,4 @@ message ProcessPaymentResponse {
 
 message OrderResponse {
   Order order = 1;
-} 
+}

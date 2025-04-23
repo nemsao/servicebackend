@@ -1,7 +1,8 @@
 package main
 
 import (
-	"context"
+	//"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -11,9 +12,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/nemsao/servicebackend/internal/config"
-	"github.com/nemsao/servicebackend/internal/database"
-	"github.com/nemsao/servicebackend/internal/services"
+	"services_app/internal/config"
+	"services_app/internal/database"
+	"services_app/internal/services"
 )
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
+	log.Println("Successfully connected to the database") // Thông báo kết nối DB thành công
 
 	// Create gRPC server
 	server := grpc.NewServer(
@@ -47,6 +49,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
+	fmt.Printf("gRPC server listening on %s\n", cfg.Server.Address) // Thông báo server lắng nghe thành công
 
 	// Graceful shutdown
 	go func() {
@@ -64,4 +67,4 @@ func main() {
 	log.Println("Shutting down server...")
 	server.GracefulStop()
 	log.Println("Server stopped")
-} 
+}
