@@ -31,7 +31,10 @@ func main() {
 	}
 	defer db.Close()
 	log.Println("Successfully connected to the database") // Thông báo kết nối DB thành công
-
+	redis, errr := database.NewRedisClient(cfg.Redis)
+	if errr != nil {
+		log.Fatalf("Failed to connect to redis: %v", errr)
+	}
 	// Create gRPC server
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(services.UnaryServerInterceptor),
@@ -39,7 +42,7 @@ func main() {
 	)
 
 	// Register services
-	services.RegisterServices(server, db, cfg)
+	services.RegisterServices(server, db,redis, cfg)
 
 	// Enable reflection for testing
 	reflection.Register(server)

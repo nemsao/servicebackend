@@ -183,9 +183,33 @@ CREATE TABLE public.tickets (
     sales_end_date TIMESTAMP NOT NULL,
     status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'sold_out', 'unavailable', 'hidden')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    seat_id UUID REFERENCES public.seats(id) ON DELETE SET NULL
 );
 COMMENT ON TABLE public.tickets IS 'Defines ticketing options available for each event';
+
+CREATE TABLE public.seats (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id UUID REFERENCES public.events(id) ON DELETE CASCADE,
+    name VARCHAR(100),       --  e.g., "A12", "VIP Box 3", "General Admission"
+    row_number VARCHAR(10),   --  (Optional)
+    seat_number VARCHAR(10),   --  (Optional)
+    coordinates TEXT,        --  (Optional)
+    attributes JSONB,        --  (Optional)
+    is_available BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (event_id, name) --  Ensure seat names are unique per event
+);
+
+COMMENT ON TABLE public.seats IS 'Individual seats or general admission areas within an event venue.';
+COMMENT ON COLUMN public.seats.name IS 'A unique identifier for the seat or area (e.g., A12, VIP Box 3, General Admission).';
+COMMENT ON COLUMN public.seats.row_number IS 'Row number of the seat, if applicable.';
+COMMENT ON COLUMN public.seats.seat_number IS 'Seat number within the row, if applicable.';
+COMMENT ON COLUMN public.seats.coordinates IS 'Coordinates of the seat within the venue layout, if applicable.';
+COMMENT ON COLUMN public.seats.attributes IS 'Additional attributes of the seat (e.g., view quality, accessibility).';
+
+CREATE INDEX idx_seats_event_id ON public.seats(event_id);
 
 CREATE TABLE public.ticket_inventory (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -438,6 +462,7 @@ CREATE INDEX idx_events_status ON public.events(status);
 CREATE INDEX idx_tickets_event ON public.tickets(event_id);
 CREATE INDEX idx_tickets_price ON public.tickets(price);
 CREATE INDEX idx_ticket_inventory_ticket ON public.ticket_inventory(ticket_id);
+CREATE INDEX idx_seat_categories_event_id ON public.seat_categories(event_id);
 
 -- Order related indexes
 CREATE INDEX idx_orders_customer ON public.orders(customer_id);

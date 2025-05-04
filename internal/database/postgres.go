@@ -8,7 +8,7 @@ import (
 		"github.com/jackc/pgx/v5"
 		"github.com/jackc/pgx/v5/pgxpool"
 
-	"services_app/internal/config"
+	  "services_app/internal/config"
 	  "github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -97,3 +97,4 @@ func (db *PostgresDB) Query(ctx context.Context, sql string, args ...interface{}
 func (db *PostgresDB) Exec(ctx context.Context, sql string, args ...interface{}) (pgconn.CommandTag, error) {
 	return db.pool.Exec(ctx, sql, args...)
 } 
+

@@ -12,22 +12,25 @@ pb_event	"services_app/proto/event"
 pb_order	"services_app/proto/order"
 pb_ticket	"services_app/proto/ticket"
 pb_user	"services_app/proto/user"
-	"services_app/internal/services/auth"
+pb_seat	"services_app/proto/seat"
+
+   "services_app/internal/services/auth"
 	"services_app/internal/services/event"
 	"services_app/internal/services/order"
 	"services_app/internal/services/ticket"
 	"services_app/internal/services/user"
+	"services_app/internal/services/seat"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"services_app/internal/config"
 )
 
 // RegisterServices registers all gRPC services with the server
-func RegisterServices(server *grpc.Server, db *database.PostgresDB, cfg *config.Config) {
+func RegisterServices(server *grpc.Server, db *database.PostgresDB,redis *database.RedisClient , cfg *config.Config) {
    // Initialize services
    userService := user.NewService(db, cfg)
    eventService := event.NewService(db, cfg)
-
+   seatService := seat.NewService(db,redis , cfg)
    // Khởi tạo TicketService server implementation
    // Biến ticketService có kiểu là *"services_app/internal/services/ticket".Service
    ticketService := ticket.NewService(db, cfg)
@@ -44,6 +47,8 @@ func RegisterServices(server *grpc.Server, db *database.PostgresDB, cfg *config.
    pb_event.RegisterEventServiceServer(server, eventService)
    pb_ticket.RegisterTicketServiceServer(server, ticketService) // <== Đăng ký implement server TicketService
    pb_order.RegisterOrderServiceServer(server, orderService)      // <== Đăng ký implement server OrderService
+   pb_seat.RegisterSeatServiceServer(server, seatService)
+
    pb_auth.RegisterAuthServiceServer(server, authService)
 }
 
